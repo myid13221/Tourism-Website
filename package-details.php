@@ -9,6 +9,25 @@ $useremail=$_SESSION['login'];
 $fromdate=$_POST['fromdate'];
 $todate=$_POST['todate'];
 $comment=$_POST['comment'];
+$status=0;
+$sql="INSERT INTO tblbooking(PackageId,UserEmail,FromDate,ToDate,Comment,status) VALUES(:pid,:useremail,:fromdate,:todate,:comment,:status)";
+$query = $dbh->prepare($sql);
+$query->bindParam(':pid',$pid,PDO::PARAM_STR);
+$query->bindParam(':useremail',$useremail,PDO::PARAM_STR);
+$query->bindParam(':fromdate',$fromdate,PDO::PARAM_STR);
+$query->bindParam(':todate',$todate,PDO::PARAM_STR);
+$query->bindParam(':comment',$comment,PDO::PARAM_STR);
+$query->bindParam(':status',$status,PDO::PARAM_STR);
+$query->execute();
+$lastInsertId = $dbh->lastInsertId();
+if($lastInsertId)
+{
+$msg="Booked Successfully";
+}
+else 
+{
+$error="Something went wrong. Please try again";
+}
 
 }
 ?>
@@ -76,7 +95,12 @@ $comment=$_POST['comment'];
 				else if($msg){?><div class="succWrap"><strong>SUCCESS</strong>:<?php echo htmlentities($msg); ?> </div><?php }?>
 <?php 
 $pid=intval($_GET['pkgid']);
-
+$sql = "SELECT * from tbltourpackages where PackageId=:pid";
+$query = $dbh->prepare($sql);
+$query -> bindParam(':pid', $pid, PDO::PARAM_STR);
+$query->execute();
+$results=$query->fetchAll(PDO::FETCH_OBJ);
+$cnt=1;
 if($query->rowCount() > 0)
 {
 foreach($results as $result)
@@ -145,7 +169,13 @@ foreach($results as $result)
 <!--- /selectroom ---->
 <<!--- /footer-top ---->
 <?php include('includes/footer.php');?>
-<?php include('includes/signup.php');?>		
+<!-- signup -->
+<?php include('includes/signup.php');?>			
+<!-- //signu -->
+<!-- signin -->
+<?php include('includes/signin.php');?>			
+<!-- //signin -->
+<!-- write us -->
 <?php include('includes/write-us.php');?>
 </body>
 </html>
